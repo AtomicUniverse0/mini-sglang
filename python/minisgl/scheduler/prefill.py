@@ -32,7 +32,7 @@ class ChunkedReq(Req):
 @dataclass
 class PrefillAdder:
     token_budget: int
-    reserved_size: int
+    reserved_size: int # 会随着 _add_one_req 调用而实时增长的
     cache_manager: CacheManager
     table_manager: TableManager
 

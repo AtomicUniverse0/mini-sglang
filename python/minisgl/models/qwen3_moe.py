@@ -79,5 +79,4 @@ class Qwen3MoeForCausalLM(BaseLLMModel):
         logits = self.lm_head.forward(output)
         return logits
 
-
 __all__ = ["Qwen3MoeForCausalLM"]

@@ -70,7 +70,7 @@ struct StoreKernel {
     auto dtype_ = SymbolicDType{};
     auto device_ = SymbolicDevice{};
 
-    TensorMatcher({-1, D}) //
+    TensorMatcher({-1, D}) // size ref的构造函数的参数就是一个SymbolicSize
         .with_strides({X, 1})
         .with_device<kDLCUDA>(device_)
         .with_dtype(dtype_)

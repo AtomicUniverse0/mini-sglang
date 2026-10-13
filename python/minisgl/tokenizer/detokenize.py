@@ -54,10 +54,10 @@ def find_printable_text(text: str):
 @dataclass
 class DecodeStatus:
     decoded_ids: List[int]
-    decoded_str: str
-    read_offset: int  # length of read ids
-    surr_offset: int  # length of surr ids
-    sent_offset: int  # length of sent out string
+    decoded_str: str # 已经确认安全解码（不含截断乱码）的完整文本字符串
+    read_offset: int  # length of read ids 记录上一次成功解码到的 decoded_ids 位置索引
+    surr_offset: int  # length of surr ids 记录解码时作为“前缀上下文（Surrounding Context）”的 Token 起始位置
+    sent_offset: int  # length of sent out string 记录已经吐给客户端/前端的字符串长度，用于计算增量 delta
 
 
 class DetokenizeManager:
@@ -82,6 +82,9 @@ class DetokenizeManager:
             s = self.decode_map[msg.uid]
             if not (msg.finished and msg.next_token == self.eos_token_id):
                 s.decoded_ids.append(msg.next_token)
+            # 滑动窗口上下文对比
+            # 有些字符被拆分成多个 token，所以解码的时候要带着前缀，这就是为什么
+            # 要从 s.surr_offset 开始，而不是直接从 s.read_offset 开始
             read_ids.append(s.decoded_ids[s.surr_offset :])
             surr_ids.append(s.decoded_ids[s.surr_offset : s.read_offset])
 
@@ -99,6 +102,7 @@ class DetokenizeManager:
                 s.surr_offset = s.read_offset
                 s.read_offset = len(s.decoded_ids)
             else:
+                # 解码结果为空，或者以 `` 结尾	说明字节不完整（字符被拆开了）或遇到了不可打印字符
                 new_text = find_printable_text(new_text)
                 output_str = s.decoded_str + new_text
 

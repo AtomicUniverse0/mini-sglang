@@ -178,5 +178,5 @@ def _fa_sgl_impl(
         num_splits=num_splits,
         pack_gqa=pack_gqa,
         causal=causal,
-        ver=version,  # TODO: support FA4 on blackwell
+        ver=version,
     )

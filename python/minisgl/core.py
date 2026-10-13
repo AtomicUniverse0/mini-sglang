@@ -14,9 +14,15 @@ if TYPE_CHECKING:
 
 @dataclass
 class SamplingParams:
-    temperature: float = 0.0
+    # 在 Softmax 前对 Logits 进行缩放。值越接近 0.0，概率分布越陡峭，输出越确定；
+    # 值越高（如 0.7~1.0），概率分布越平缓，输出越具有随机性和创意，但也更容易产生幻觉或逻辑错乱
+    temperature: float = 0.0 
+
+    # 限制每一步只从概率最高的前 K 个 Token 中挑选候选词
     top_k: int = -1
     top_p: float = 1.0
+
+    # 忽略 <eos>，强制模型继续生成，直到触发 max_tokens 为止（常用于压测或基准评估)
     ignore_eos: bool = False
     max_tokens: int = 1024
 

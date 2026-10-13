@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 
 class CacheManager:
+    # type 是指 cache_type，取值是 radix 和 native
     def __init__(self, num_pages: int, page_size: int, page_table: torch.Tensor, type: str):
         # The `_free_slots` follows a page-aligned manner. For example, if page_size = 2,
         # the `_free_slots` may look like [0, 2, 4, 6, ...], and each slot represents a page.
@@ -20,6 +21,7 @@ class CacheManager:
         self.free_slots = torch.arange(num_pages, dtype=torch.int32, device=device) * page_size
         self.prefix_cache = create_prefix_cache(device=device, type=type)
         self.device = device
+        # [max_running_reqeust + 1, max_seq_len]， num_pages[i, j] 表示第i个请求中第j个token对应的 kv cache 存在哪个slot
         self.num_pages = num_pages
         self.page_table = page_table
         self.page_size = page_size

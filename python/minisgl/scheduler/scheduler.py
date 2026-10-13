@@ -46,12 +46,12 @@ class Scheduler(SchedulerIOMixin):
     def __init__(self, config: SchedulerConfig):
         from minisgl.engine import Engine
 
-        self.engine = Engine(config)
+        self.engine = Engine(config) # 自己持有一条 engine stream
 
         # use another stream to overlap metadata processing with computation
         self.device = self.engine.device
-        self.stream = torch.cuda.Stream(device=self.device)
-        self.engine_stream_ctx = torch.cuda.stream(self.engine.stream)
+        self.stream = torch.cuda.Stream(device=self.device) # scheduler 用的 stream
+        self.engine_stream_ctx = torch.cuda.stream(self.engine.stream) # engine stream 的上下文
         torch.cuda.set_stream(self.stream)
 
         # initialize other managers

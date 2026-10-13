@@ -7,7 +7,7 @@ import torch
 class BaseCaptureData:
     seq_lens: torch.Tensor
     positions: torch.Tensor
-    cu_seqlens_k: torch.Tensor
+    cu_seqlens_k: torch.Tensor # cumulative sequence lengths of Query
     cu_seqlens_q: torch.Tensor
     page_table: torch.Tensor
 

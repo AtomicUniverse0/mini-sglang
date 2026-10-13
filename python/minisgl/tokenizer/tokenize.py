@@ -11,9 +11,14 @@ class TokenizeManager:
     def __init__(self, tokenizer: PreTrainedTokenizerBase) -> None:
         self.tokenizer = tokenizer
 
+    # 将prompt 转换为纯文本，随后进行分词
     def tokenize(self, msgs: List[TokenizeMsg]) -> List[torch.Tensor]:
-        results: List[torch.Tensor] = []
-        # TODO: batch tokenization
+        if not msgs:
+            return []
+
+        prompts: List[str] = []
+
+
         for msg in msgs:
             if isinstance(msg.text, list):
                 prompt = self.tokenizer.apply_chat_template(
@@ -24,8 +29,12 @@ class TokenizeManager:
                 assert isinstance(prompt, str)
             else:
                 prompt = msg.text
-            input_ids: torch.Tensor = (  # type: ignore
-                self.tokenizer.encode(prompt, return_tensors="pt")
-            )
-            results.append(input_ids.view(-1).to(torch.int32))
-        return results
+            prompts.append(prompt)
+
+        encoded = self.tokenizer(
+            prompts,
+            padding=False,
+            return_attention_mask=False,
+            return_token_type_ids=False,
+        )
+        return [torch.tensor(input_ids, dtype=torch.int32) for input_ids in encoded["input_ids"]]

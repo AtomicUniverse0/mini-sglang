@@ -50,8 +50,8 @@ def tokenize_worker(
     from .detokenize import DetokenizeManager
     from .tokenize import TokenizeManager
 
-    tokenize_manager = TokenizeManager(tokenizer)
-    detokenize_manager = DetokenizeManager(tokenizer)
+    tokenize_manager = TokenizeManager(tokenizer) # 可以成批地进行分词
+    detokenize_manager = DetokenizeManager(tokenizer) # 
 
     if ack_queue is not None:
         ack_queue.put(f"Tokenize server {tokenizer_id} is ready")

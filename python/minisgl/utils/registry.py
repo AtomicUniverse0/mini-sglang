@@ -3,10 +3,11 @@ from typing import Callable, Generic, Iterable, List, TypeVar
 T = TypeVar("T")
 
 
+# 这个类内部维护了一个 name -> T 的dict，允许通过装饰器注入
 class Registry(Generic[T]):
     def __init__(self, type: str):
         self._registry = {}
-        self._type = type
+        self._type = type # type = "Cache Manager"
 
     def register(self, name: str) -> Callable[[T], None]:
         if name in self._registry:
